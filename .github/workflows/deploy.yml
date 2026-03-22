@@ -17,10 +17,10 @@ jobs:
         run: |
           cat > .env << EOF
           NODE_ENV=production
-          APP_PORT=${{ secrets.APP_PORT }}
-          PROJECT_NAME=eisenhower
+          APP_PORT=3007
+          PROJECT_NAME=dikta
 
-          POSTGRES_PORT=5432
+          POSTGRES_PORT=5436
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
@@ -44,7 +44,7 @@ jobs:
           echo "⏳ Waiting for services..."
           sleep 20
           for i in {1..10}; do
-            if curl -sf http://localhost:${{ secrets.APP_PORT }}/api/health > /dev/null; then
+            if curl -sf http://localhost:3007/api/health > /dev/null; then
               echo "✅ App is healthy"
               exit 0
             fi

@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Quadrant {
+  DO
+  PLAN
+  DELEGATE
+  ELIMINATE
+}
+
+model Task {
+  id           String    @id @default(cuid())
+  title        String
+  description  String?
+  deadline     DateTime?
+  quadrant     Quadrant
+  aiConfidence Float     @default(0)
+  aiReasoning  String?
+  completed    Boolean   @default(false)
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}

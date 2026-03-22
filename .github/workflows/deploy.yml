@@ -1,0 +1,56 @@
+name: Deploy to alvis-server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file from secrets
+        run: |
+          cat > .env << EOF
+          NODE_ENV=production
+          APP_PORT=${{ secrets.APP_PORT }}
+          PROJECT_NAME=eisenhower
+
+          POSTGRES_PORT=5432
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}
+
+          GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+          EOF
+          echo "✅ Archivo .env creado"
+
+      - name: Deploy with Docker Compose
+        run: |
+          echo "🚀 Starting deployment..."
+          docker compose up -d --build
+          echo ""
+          echo "📊 Container Status:"
+          docker compose ps
+          echo ""
+
+      - name: Health check
+        run: |
+          echo "⏳ Waiting for services..."
+          sleep 20
+          for i in {1..10}; do
+            if curl -sf http://localhost:${{ secrets.APP_PORT }}/api/health > /dev/null; then
+              echo "✅ App is healthy"
+              exit 0
+            fi
+            echo "Waiting... ($i/10)"
+            sleep 5
+          done
+          echo "⚠️ Health check timed out"
+          docker compose logs app --tail=20
+          exit 1

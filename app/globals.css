@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Background */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F8F8;
+  --overlay-bg: #00000066;
+
+  /* Text */
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B7280;
+
+  /* Border */
+  --border-color: #E5E7EB;
+
+  /* Buttons */
+  --btn-primary-bg: #1A1A1A;
+  --btn-primary-text: #FFFFFF;
+
+  /* Quadrant 1 - Hacer (DO) */
+  --q1-color: #E24B4A;
+  --q1-bg: #FEF2F2;
+
+  /* Quadrant 2 - Planificar (PLAN) */
+  --q2-color: #378ADD;
+  --q2-bg: #EFF6FF;
+
+  /* Quadrant 3 - Delegar (DELEGATE) */
+  --q3-color: #EF9F27;
+  --q3-bg: #FFFBEB;
+
+  /* Quadrant 4 - Eliminar (ELIMINATE) */
+  --q4-color: #888780;
+  --q4-bg: #F5F5F4;
+
+  /* Completed */
+  --completed-opacity: 0.45;
+
+  /* Badge */
+  --badge-bg: #F3F4F6;
+}
+
+@layer base {
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    font-family: "Inter", sans-serif;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+  }
+}

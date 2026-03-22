@@ -1,50 +1,61 @@
-# Stage 1: Install dependencies
+# ================================
+# Stage 1: Dependencies
+# ================================
 FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY package.json package-lock.json* ./
+COPY prisma ./prisma/
+RUN npm ci && npm cache clean --force
 
-# Stage 2: Build
+# ================================
+# Stage 2: Builder
+# ================================
 FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generar cliente de Prisma
-RUN npx prisma generate
-
-# Build de Next.js
+# Generar cliente de Prisma y build de Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+RUN npx prisma generate && npm run build
 
-# Stage 3: Production runner
+# ================================
+# Stage 3: Migrator (migrations)
+# ================================
+FROM node:20-alpine AS migrator
+WORKDIR /app
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/package.json ./
+
+# ================================
+# Stage 4: Runner (Production)
+# ================================
 FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Crear usuario no-root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-# Copiar archivos necesarios del build
 COPY --from=builder /app/public ./public
+
+RUN mkdir .next && chown nextjs:nodejs .next
+
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Copiar Prisma para migraciones en runtime
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
 USER nextjs
 
 EXPOSE 3000
-ENV PORT=3000
+
 ENV HOSTNAME="0.0.0.0"
+ENV PORT=3000
 
 CMD ["node", "server.js"]

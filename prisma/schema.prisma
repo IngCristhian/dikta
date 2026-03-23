@@ -15,15 +15,26 @@ enum Quadrant {
 }
 
 model Task {
-  id           String    @id @default(cuid())
-  title        String
-  description  String?
-  deadline     DateTime?
-  quadrant     Quadrant
-  aiConfidence Float     @default(0)
-  aiReasoning  String?
-  completed    Boolean   @default(false)
-  completedAt  DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  title           String
+  description     String?
+  deadline        DateTime?
+  quadrant        Quadrant
+  aiConfidence    Float     @default(0)
+  aiReasoning     String?
+  completed       Boolean   @default(false)
+  completedAt     DateTime?
+  calendarEventId String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model GoogleToken {
+  id           String   @id @default("singleton")
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  scope        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

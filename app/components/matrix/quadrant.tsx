@@ -70,6 +70,8 @@ interface QuadrantProps {
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
   onMoveToQuadrant: (id: string, quadrant: Task["quadrant"]) => void;
+  onSendToCalendar: (task: Task) => void;
+  isGoogleConnected: boolean;
 }
 
 export function Quadrant({
@@ -79,6 +81,8 @@ export function Quadrant({
   onEdit,
   onDelete,
   onMoveToQuadrant,
+  onSendToCalendar,
+  isGoogleConnected,
 }: QuadrantProps) {
   const Icon = config.icon;
   const pendingCount = tasks.filter((t) => !t.completed).length;
@@ -139,6 +143,8 @@ export function Quadrant({
               onEdit={onEdit}
               onDelete={onDelete}
               onMoveToQuadrant={onMoveToQuadrant}
+              onSendToCalendar={onSendToCalendar}
+              isGoogleConnected={isGoogleConnected}
             />
           ))
         )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MoreHorizontal, Check, Sparkles } from "lucide-react";
+import { MoreHorizontal, Check, Sparkles, CalendarPlus, CalendarCheck, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/hooks/use-tasks";
 
@@ -12,6 +12,8 @@ interface TaskCardProps {
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
   onMoveToQuadrant: (id: string, quadrant: Task["quadrant"]) => void;
+  onSendToCalendar: (task: Task) => void;
+  isGoogleConnected: boolean;
   compact?: boolean;
 }
 
@@ -29,9 +31,12 @@ export function TaskCard({
   onEdit,
   onDelete,
   onMoveToQuadrant,
+  onSendToCalendar,
+  isGoogleConnected,
   compact,
 }: TaskCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [calendarLoading, setCalendarLoading] = useState(false);
 
   const formatDeadline = (deadline: string) => {
     const date = new Date(deadline);
@@ -39,6 +44,18 @@ export function TaskCard({
   };
 
   const confidenceText = `${Math.round(task.aiConfidence * 100)}%`;
+
+  const isInCalendar = !!task.calendarEventId;
+
+  const handleCalendarClick = async () => {
+    if (!isGoogleConnected || isInCalendar || calendarLoading) return;
+    setCalendarLoading(true);
+    try {
+      onSendToCalendar(task);
+    } finally {
+      setCalendarLoading(false);
+    }
+  };
 
   return (
     <div
@@ -88,8 +105,43 @@ export function TaskCard({
               {confidenceText}
             </span>
           )}
+          {isInCalendar && (
+            <span className="flex items-center gap-1 rounded-md bg-[var(--q2-glow)] px-1.5 py-0.5 text-[11px] text-[var(--q2-color)]">
+              <CalendarCheck className="h-2.5 w-2.5" />
+              Calendar
+            </span>
+          )}
         </div>
       </div>
+
+      {/* Calendar button */}
+      <button
+        onClick={handleCalendarClick}
+        disabled={!isGoogleConnected || isInCalendar || calendarLoading}
+        className={cn(
+          "opacity-0 group-hover:opacity-100 transition-opacity",
+          isInCalendar
+            ? "text-[var(--q2-color)] opacity-60 group-hover:opacity-60 cursor-default"
+            : isGoogleConnected
+              ? "text-[var(--text-muted)] hover:text-[var(--q2-color)]"
+              : "text-[var(--text-muted)] opacity-30 cursor-not-allowed",
+        )}
+        title={
+          isInCalendar
+            ? "Ya en Calendar"
+            : isGoogleConnected
+              ? "Enviar a Calendar"
+              : "Conecta Google Calendar"
+        }
+      >
+        {calendarLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : isInCalendar ? (
+          <CalendarCheck className="h-4 w-4" />
+        ) : (
+          <CalendarPlus className="h-4 w-4" />
+        )}
+      </button>
 
       {/* Menu */}
       <div className="relative">
@@ -106,7 +158,7 @@ export function TaskCard({
               className="fixed inset-0 z-40"
               onClick={() => setMenuOpen(false)}
             />
-            <div className="absolute right-0 top-6 z-50 min-w-[160px] rounded-lg border border-[var(--glass-border)] bg-[var(--bg-secondary)] py-1 shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+            <div className="absolute right-0 top-6 z-50 min-w-[180px] rounded-lg border border-[var(--glass-border)] bg-[var(--bg-secondary)] py-1 shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl">
               <button
                 className="w-full px-3 py-2 text-left text-sm text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]"
                 onClick={() => {
@@ -116,6 +168,39 @@ export function TaskCard({
               >
                 Editar
               </button>
+
+              {/* Calendar menu item */}
+              <button
+                className={cn(
+                  "w-full px-3 py-2 text-left text-sm flex items-center gap-2",
+                  isInCalendar
+                    ? "text-[var(--text-muted)] cursor-default"
+                    : isGoogleConnected
+                      ? "text-[var(--q2-color)] hover:bg-[var(--bg-card-hover)]"
+                      : "text-[var(--text-muted)] cursor-not-allowed",
+                )}
+                disabled={!isGoogleConnected || isInCalendar}
+                onClick={() => {
+                  if (!isGoogleConnected || isInCalendar) return;
+                  onSendToCalendar(task);
+                  setMenuOpen(false);
+                }}
+              >
+                {isInCalendar ? (
+                  <>
+                    <CalendarCheck className="h-3.5 w-3.5" />
+                    Ya en Calendar
+                  </>
+                ) : (
+                  <>
+                    <CalendarPlus className="h-3.5 w-3.5" />
+                    Enviar a Calendar
+                  </>
+                )}
+              </button>
+
+              <hr className="my-1 border-[var(--border-color)]" />
+
               {(["DO", "PLAN", "DELEGATE", "ELIMINATE"] as const)
                 .filter((q) => q !== task.quadrant)
                 .map((q) => (

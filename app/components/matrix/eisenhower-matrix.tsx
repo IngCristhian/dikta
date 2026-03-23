@@ -10,6 +10,8 @@ interface EisenhowerMatrixProps {
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
   onMoveToQuadrant: (id: string, quadrant: Task["quadrant"]) => void;
+  onSendToCalendar: (task: Task) => void;
+  isGoogleConnected: boolean;
 }
 
 export function EisenhowerMatrix({
@@ -18,6 +20,8 @@ export function EisenhowerMatrix({
   onEdit,
   onDelete,
   onMoveToQuadrant,
+  onSendToCalendar,
+  isGoogleConnected,
 }: EisenhowerMatrixProps) {
   const getTasksForQuadrant = (quadrant: Task["quadrant"]) =>
     tasks.filter((t) => t.quadrant === quadrant);
@@ -35,6 +39,8 @@ export function EisenhowerMatrix({
             onEdit={onEdit}
             onDelete={onDelete}
             onMoveToQuadrant={onMoveToQuadrant}
+            onSendToCalendar={onSendToCalendar}
+            isGoogleConnected={isGoogleConnected}
           />
         ))}
       </div>
@@ -50,6 +56,8 @@ export function EisenhowerMatrix({
             onEdit={onEdit}
             onDelete={onDelete}
             onMoveToQuadrant={onMoveToQuadrant}
+            onSendToCalendar={onSendToCalendar}
+            isGoogleConnected={isGoogleConnected}
           />
         ))}
       </div>

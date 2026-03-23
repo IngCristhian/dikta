@@ -13,6 +13,8 @@ interface MobileAccordionProps {
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
   onMoveToQuadrant: (id: string, quadrant: Task["quadrant"]) => void;
+  onSendToCalendar: (task: Task) => void;
+  isGoogleConnected: boolean;
 }
 
 export function MobileAccordion({
@@ -22,6 +24,8 @@ export function MobileAccordion({
   onEdit,
   onDelete,
   onMoveToQuadrant,
+  onSendToCalendar,
+  isGoogleConnected,
 }: MobileAccordionProps) {
   const [open, setOpen] = useState(tasks.length > 0);
   const Icon = config.icon;
@@ -85,6 +89,8 @@ export function MobileAccordion({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onMoveToQuadrant={onMoveToQuadrant}
+                onSendToCalendar={onSendToCalendar}
+                isGoogleConnected={isGoogleConnected}
               />
             ))
           )}

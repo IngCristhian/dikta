@@ -12,6 +12,7 @@ export interface Task {
   aiReasoning: string | null;
   completed: boolean;
   completedAt: string | null;
+  calendarEventId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -20,6 +21,7 @@ export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -33,9 +35,20 @@ export function useTasks() {
     }
   }, []);
 
+  const checkGoogleStatus = useCallback(async () => {
+    try {
+      const res = await fetch("/api/auth/google/status");
+      const data = await res.json();
+      setIsGoogleConnected(data.connected);
+    } catch {
+      setIsGoogleConnected(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchTasks();
-  }, [fetchTasks]);
+    checkGoogleStatus();
+  }, [fetchTasks, checkGoogleStatus]);
 
   const createTask = async (data: {
     title: string;
@@ -79,5 +92,37 @@ export function useTasks() {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
 
-  return { tasks, loading, creating, createTask, updateTask, deleteTask, fetchTasks };
+  const sendToCalendar = async (id: string, dateTime?: string) => {
+    const res = await fetch(`/api/tasks/${id}/calendar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dateTime }),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || "Error enviando al calendario");
+    }
+    const updated = await res.json();
+    setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+    return updated;
+  };
+
+  const disconnectGoogle = async () => {
+    await fetch("/api/auth/google/disconnect", { method: "POST" });
+    setIsGoogleConnected(false);
+  };
+
+  return {
+    tasks,
+    loading,
+    creating,
+    isGoogleConnected,
+    createTask,
+    updateTask,
+    deleteTask,
+    fetchTasks,
+    sendToCalendar,
+    disconnectGoogle,
+    checkGoogleStatus,
+  };
 }

@@ -23,6 +23,7 @@
     "@prisma/client": "^6.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "googleapis": "^171.4.0",
     "groq-sdk": "^1.1.1",
     "lucide-react": "^0.462.0",
     "next": "^15.0.0",

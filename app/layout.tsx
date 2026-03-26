@@ -23,7 +23,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("theme")==="light")document.documentElement.classList.add("light")}catch(e){}`,
+          }}
+        />
+      </head>
       <body className={`${inter.variable} ${spaceGrotesk.variable} antialiased bg-[var(--bg-primary)]`}>
         {children}
       </body>

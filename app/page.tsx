@@ -6,6 +6,7 @@ import { useTasks, type Task } from "@/hooks/use-tasks";
 import { EisenhowerMatrix } from "./components/matrix/eisenhower-matrix";
 import { TaskForm } from "./components/task-form";
 import { CalendarTimePicker } from "./components/calendar-time-picker";
+import { ThemeToggle } from "./components/theme-toggle";
 
 export default function Home() {
   const {
@@ -125,6 +126,8 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
+
           {/* Google Calendar indicator */}
           <div className="relative">
             {isGoogleConnected ? (
@@ -172,7 +175,7 @@ export default function Home() {
               setEditingTask(null);
               setFormOpen(true);
             }}
-            className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-[var(--bg-primary)] transition-all hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] active:scale-[0.97]"
+            className="flex items-center gap-2 rounded-lg bg-[var(--btn-primary-bg)] px-4 py-2 text-sm font-medium text-[var(--btn-primary-text)] transition-all hover:shadow-[0_0_20px_var(--btn-primary-shadow)] active:scale-[0.97]"
           >
             <Plus className="h-4 w-4" />
             <span className="hidden md:inline">Nueva tarea</span>

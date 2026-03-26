@@ -167,7 +167,7 @@ export function TaskForm({
                 <button
                   type="submit"
                   disabled={loading || !title.trim()}
-                  className="flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-[var(--bg-primary)] disabled:opacity-40 transition-all hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] active:scale-[0.97]"
+                  className="flex items-center gap-2 rounded-lg bg-[var(--btn-primary-bg)] px-5 py-2.5 text-sm font-medium text-[var(--btn-primary-text)] disabled:opacity-40 transition-all hover:shadow-[0_0_20px_var(--btn-primary-shadow)] active:scale-[0.97]"
                 >
                   {loading ? (
                     <>
@@ -274,7 +274,7 @@ export function TaskForm({
               <button
                 type="submit"
                 disabled={loading || !title.trim()}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-white py-3.5 text-sm font-medium text-[var(--bg-primary)] disabled:opacity-40 transition-all active:scale-[0.97]"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--btn-primary-bg)] py-3.5 text-sm font-medium text-[var(--btn-primary-text)] disabled:opacity-40 transition-all active:scale-[0.97]"
               >
                 {loading ? (
                   <>

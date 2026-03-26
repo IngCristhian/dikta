@@ -114,7 +114,7 @@ export function CalendarTimePicker({
             <button
               type="submit"
               disabled={loading || !date || !time}
-              className="flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-[var(--bg-primary)] disabled:opacity-40 transition-all hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] active:scale-[0.97]"
+              className="flex items-center gap-2 rounded-lg bg-[var(--btn-primary-bg)] px-5 py-2.5 text-sm font-medium text-[var(--btn-primary-text)] disabled:opacity-40 transition-all hover:shadow-[0_0_20px_var(--btn-primary-shadow)] active:scale-[0.97]"
             >
               {loading ? (
                 <>
